@@ -4,4 +4,4 @@ class ConceptRequest(BaseModel):
     idea: str
 
 class ConceptResponse(BaseModel):
-    concept_breakdown: str
+    concept: str

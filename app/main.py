@@ -1,20 +1,29 @@
-# 👇 ここが一番上！
+# .envの読み込み
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from app.core.openai_client import generate_concept_from_idea
+import os
+print("🔑 OPENAI_API_KEY:", os.getenv("OPENAI_API_KEY"))  # ログ出力で確認
+
+# 🔽 Firebase Admin SDK を初期化
+import app.core.firebase_admin  # ← 追加するだけで初期化されます
+
+from fastapi import FastAPI
+from app.routers import concept
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.api import checkout, webhook
 
 app = FastAPI()
 
-class ConceptRequest(BaseModel):
-    idea: str
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Next.jsの開発サーバー
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.post("/generate-concept")
-async def generate_concept(request: ConceptRequest):
-    try:
-        concept = await generate_concept_from_idea(request.idea)  # ← await を忘れずに！
-        return {"concept": concept}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+app.include_router(checkout.router)
+app.include_router(webhook.router)

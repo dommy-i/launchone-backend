@@ -1,5 +1,15 @@
-.env
-__pycache__/
 *.pyc
 .vscode/
+
+# Python関連
+__pycache__/
+*.py[cod]
 *.sqlite3
+
+# 仮想環境
+.venv/
+
+# 環境変数ファイル
+.env
+
+*.json
